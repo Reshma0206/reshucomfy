@@ -1,0 +1,276 @@
+npm init vite
+cd client
+npm install 
+npm run dev
+
+npm install bootstrap axios react-router-dom
+
+npm run dev
+
+---App.jsx
+ 
+import { useState } from "react";
+import "./App.css";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import "bootstrap/dist/css/bootstrap.min.css";
+import Users from "./Users";
+import UpdateUser from "./UpdateUser";
+import CreateUser from "./CreateUser";
+
+function App() {
+  return (
+    <div>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Users />}></Route>
+          <Route path="/create" element={<CreateUser />}></Route>
+          <Route path="/update" element={<UpdateUser />}></Route>
+        </Routes>
+      </BrowserRouter>
+    </div>
+  );
+}
+
+export default App;
+
+
+---Users.jsx
+
+import axios from "axios";
+import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+
+function Users() {
+  const [users, setUsers] = useState([{
+    Name: "reshma", Email: "reshu.com" , Age:20
+  }]);
+
+  return (
+    <div className="d-flex vh-100 bg-primary justify-content-center align-items-center">
+      <div className="w-50 bg-white rounded p-3">
+       <Link to="/create" className="btn btn-success">
+          Add +
+        </Link>
+        <table className="table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Age</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {users.map((user) => {
+              return (
+                <tr>
+                  <td>{user.Name}</td>
+                  <td>{user.Email}</td>
+                  <td>{user.Age}</td>
+                  <td>
+                    <Link to="/update" className="btn btn-success">
+                      Update
+                    </Link>
+                    <button className="btn btn-danger">Delete</button>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+
+---CreateUser.jsx 
+
+import React, { useState } from "react";
+
+function CreateUser() {
+
+  return (
+    <div className="d-flex vh-100 bg-primary justify-content-center align-items-center">
+      <div className="w-50 bg-white rounded p-3">
+        <form>
+          <h2>Add User</h2>
+          <div className="mb-2">
+            <label htmlFor="">Name</label>
+            <input
+              type="text"
+              placeholder="Enter Name"
+              className="form-control"
+            />
+          </div>
+          <div className="mb-2">
+            <label htmlFor="">Email</label>
+            <input
+              type="email"
+              placeholder="Enter Email"
+              className="form-control"
+            />
+          </div>
+          <div className="mb-2">
+            <label htmlFor="">Age</label>
+            <input
+              type="text"
+              placeholder="Enter Age"
+              className="form-control"
+            />
+          </div>
+          <button className="btn btn-success">Submit</button>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+export default CreateUser;
+
+
+---server
+cd server
+npm init -y
+npm install express mongoose cors nodemon
+npm start
+
+---package.json 
+"scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon index.js"
+},
+
+--- index.js
+
+const express = require("express");
+const mongoose = require("mongoose");
+const cors = require("cors");
+
+const app = express();
+app.use(cors());
+app.use(express.json()); 
+
+app.listen(5001, () => {
+  console.log(`Server running on port 5001`);
+}); 
+
+run server npm start
+
+databaseName - crud , collectionName - user
+
+---CONNECTION WD DATABASE
+
+mongoose.connect("mongodb://127.0.0.1:27017/crud");
+
+---CREATE MODEL 
+folder - models , file - Users.js 
+
+---Users.js
+
+const mongoose = require("mongoose");
+
+const UserSchema = new mongoose.Schema({
+  name: String,
+  email: String,
+  age: Number,
+});
+
+const UserModel = mongoose.model("users", UserSchema);
+module.exports = UserModel;
+
+--index.js 
+const UserModel = require("./models/Users"); 
+
+app.post("/createUser", (req, res) => {
+  UserModel.create(req.body)
+    .then((users) => res.json(users))
+    .catch((err) => res.json(err));
+}); 
+
+--client 
+-- CreateUsers.jsx 
+
+  const [name, setName] = useState();
+  const [email, setEmail] = useState();
+  const [age, setAge] = useState(); 
+
+ onChange={(e) => setName(e.target.value)} 
+
+            <input
+              type="text"
+              placeholder="Enter Name"
+              className="form-control"
+              onChange={(e) => setName(e.target.value)}
+            />  
+<form onSubmit={Submit}> 
+
+ const Submit = (e) => {
+    e.preventDefault();
+    axios
+      .post("http://localhost:5001/createUser", { name, email, age })
+      .then((result) => {
+        console.log("result", result);
+        navigate("/");
+      })
+      .catch((err) => console.log(err));
+  };
+
+---Users.jsx 
+
+ const [users, setUsers] = useState([]);
+
+  useEffect(() => {
+    axios
+      .get("http://localhost:5001")
+      .then((result) => setUsers(result.data))
+      .catch((err) => console.log(err));
+  }, []); 
+
+  ---server side 
+  write API for get method 
+
+app.get("/", (req, res) => {
+  UserModel.find({})
+    .then((users) => res.json(users))
+    .catch((err) => res.json(err));
+}); 
+
+--- Users.jsx  
+
+<Link
+to={`/update/${user._id}`}
+className="btn btn-success"
+>Update
+</Link> 
+
+-- App.jsx 
+edit path
+<Route path="/update/:id" element={<UpdateUser />}></Route>
+
+---UpdateUser.jsx 
+
+ const { id } = useParams();
+
+  const [name, setName] = useState();
+  const [email, setEmail] = useState();
+  const [age, setAge] = useState();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    axios
+      .get("http://localhost:5001/getUser/" + id)
+      .then((result) => setUsers(result.data))
+      .catch((err) => console.log(err));
+  });
+
+---server 
+index.js 
+
+app.get("/getUser/:id", (req, res) => {
+  const id = req.params.id;
+  UserModel.findById({ _id:id })
+    .then((users) => res.json(users))
+    .catch((err) => res.json(err));
+});
+
+
