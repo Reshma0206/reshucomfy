@@ -1,0 +1,415 @@
+MongoDB 
+NoSQL database management system
+NoSQL - Not Only SQL 
+
+data in each document is stored as field value pairs
+document - group of field value pairs 
+to represent an object
+collection - group of one or more documents
+database - group of one or more collections
+
+VS Code extension - MongoDB for VS Code
+open mongodb shell - type mongosh, cls 
+
+show dbs  - 3 (admin,config,local)
+to use database type - use dbname - use admin (switched to db admin)
+if u use db that doesnot exist - use school 
+
+db.createCollection("students") -o/p {ok: 1}
+
+db.dropDatabase() - o/p {ok: 1, dropped: 'school'}
+
+---insert document
+
+db.students.insertOne({name: "Spongebob", age:30, gpa:3.2})
+o/p - {
+    acknowledge: true,
+    insertedId: ObjectId('')
+}
+
+---to return collections 
+db.students.find()
+
+o/p - 
+[
+    {
+        _id: ObjectId(''),
+        name: 
+        age: 
+        gpa:
+    }
+]
+
+---insert many
+
+db.students.insertMany([
+    {
+        name: "Patrick",
+        age:38,
+        gpa:1.5
+    },
+    {
+        name: "Patrick",
+        age:38,
+        gpa:1.5
+    },
+    {
+        name: "Patrick",
+        age:38,
+        gpa:1.5
+    }
+    ])
+    
+o/p - 
+{
+    acknowledge: true,
+    insertedIds: {
+        '0': ObjectId(""),
+        '1': ObjectId(""),
+        '2': ObjectId(""),
+    }
+}
+
+MongoDB Compass
+
+Add database
+
+insert one - {name: "Spongebob", age:30, gpa:3.2}
+insert many - [
+    {
+        name: "Patrick",
+        age:38,
+        gpa:1.5
+    },
+    {
+        name: "Patrick",
+        age:38,
+        gpa:1.5
+    },
+    {
+        name: "Patrick",
+        age:38,
+        gpa:1.5
+    }
+    ]
+
+--- datatypes
+
+strings
+integers - no decimal - whole numbers
+double - decimal
+boolean
+date objects - new Date()
+null - no value
+array
+nested documents
+
+db.students.insertOne(
+    {
+        name: "Lary",
+        age: 32,
+        gpa: 2.8,
+        fullTime: false,
+        registerDate: new Date(),
+        graduationDate: null,
+        courses: ["Biology", "Chemistry","Calculus"],
+        address: {
+            street: "123 Fake St.",
+            city: "Bikini Bottom",
+            zip: 12345
+        }
+
+    })
+
+---Sort and Limit documents
+
+---Sort
+names in alphabetical order
+db.students.find().sort({name:1})
+
+names in reverse alphabetical order
+db.students.find().sort({name: -1})
+
+db.students.find().sort({gpa:1})
+
+---Limit 
+db.students.find().limit(1)
+
+db.students.find().sort({gpa: -1}).limit(1)
+
+---find() method
+
+.find({query}, {projection})
+query parameter is similar to WHERE clause in SQL
+
+db.students.find({name: "Spongebob"})
+db.students.find({gpa: 4.0, fullTime: true})
+
+.find({}, {})
+projection - return specific fields
+
+returns every documents but only give their name
+db.students.find({},{name: true})
+db.students.find({},{_id: false, name: true})
+
+---Update documents
+
+.updateOne(filter, update)
+filter is the selection criteria for the update 
+
+db.students.updateOne({name: "Spongebob"}, {$set: {fullTime: true}})
+
+see result using 
+db.students.find({name: "Spongebob"})
+
+db.students.updateOne({_id: ObjectId('')}, {$set: {fullTime: false}}) 
+db.students.find({_id: ObjectId('')})
+
+remove particular field - value equal to empty string
+---unset
+updateOne({_id: ObjectId('')}, {$unset: {fullTime: ""}})
+
+
+---updateMany
+
+db.students.updateMany({}, {$set: {fullTime: false}})
+db.students.updateMany({fullTime: {$exists:false}}, {$set: {fullTime:true}})
+
+---DELETE document
+
+db.students.deleteOne({name: "Larry"})
+db.students.deleteMany({fullTime: false})
+
+if registerDate doesn't exist delete that document
+
+db.students.deleteMany({registerDate: {$exists: false}})
+
+---COMPARISON OPERATOR
+
+NOTEQUAL OPERATOR
+db.students.find({name: {$ne: "Spongebob"}})
+
+< , <= 
+.find({age: {$lt: 20}})
+.find({age: {$lte: 20}})
+
+>, >=
+.find({age: {$gt: 20}})
+.find({age: {$gte: 20}})
+
+.find({age: {$gte: 3, $lte: 4}})
+
+IN
+.find({name: {$in: ["Spongebob", "Patrick", "Sandy"]}})
+
+NOT IN 
+.find({name: {$nin: ["Spongebob", "Patrick", "Sandy"]}})
+
+---LOGICAL OPERATORS
+
+$and 
+$not
+$nor
+$or
+
+.find({$and: [ {} , {} ]})
+
+.find({$and: [{fullTime:true} , {age: {$lte:22}}]})
+
+.find({age: {$not: {$gte: 30}}}) - null values are returned
+.find({age: {$lt: 30}}) - don't return null values
+
+--- INDEXES
+indexes support the efficient execution of queries in MongoDB.
+Without indexes, MongoDB must perform a collection scan, i.e. scan every document in a collection, 
+to select those documents that match the query statement. if an appropriate index exists for a query, MongoDB can use the index to limit 
+the number of documents it mush insepect.
+
+.find({name: "Larry}).explain("executionStats") - Linear Search
+
+Ascending 
+db.students.createIndex({name: 1}) o/p - name_1
+Descinding
+db.students.createIndex({name: -1})
+
+db.students.getIndexes()
+db.students.dropIndex("name_1")
+
+applying an index to a field allows for quicklookup of that field 
+bt it takes up more memory and slows insert update and remove operations
+
+--- COLLECTIONS 
+show collections 
+
+db.createCollection("teachers" , {maxSize})
+db.createCollection("teachers" , {capped: true, size:10000000, max:100 }, {autoIndex: false})
+not more than 100 documents 
+
+drop collection 
+db.teachers.drop()
+
+
+treat you as a good explanator. explain as you are explaining to a college student who don't know anything about web development.
+explain in simple terms with an example
+debug the code and explain briefly line to line. explain the use of each an every line in code and why we have used that line.
+I have provided you above code explain each line in code.explain the defenition of particular line and why we have used in that code
+
+
+----------------------------Express------------------------------
+
+What is Express.Js?
+Express.js is a popular web framework for Node.js. It simplifies building web applications and APIs using JavaScript on the server side. 
+ With Express, you can easily handle routes, requests, and responses, making development more efficient.
+ It’s lightweight, flexible, and adaptable to your needs
+
+2. Why use Express.Js?
+Express.js is a lightweight Node.js framework that gives us ability to create server-side web applications faster and smarter. 
+The main reason for choosing Express is its simplicity, minimalism, flexibility, and scalability characteristics. 
+It provides easy setup for middlewares and routing.
+
+4. Differentiate between Node.js and Express.js?
+Node.js is the runtime environment that allows you to execute JavaScript on the server side, 
+on the other hand Express.js is a framework built on top of Node.js that provides a set of tools for building web applications and APIs.
+
+
+ What is the use of app.use() in Express.js?
+app.use() is used to add middleware functions in an Express application. 
+It can be used to add global middleware functions or to add middleware functions to specific routes.
+
+Think of app.use() as a way to add special features or behaviors to your Express app.
+It’s like adding extra tools to your toolbox before you start building something cool!
+
+
+const express = require('express');
+const app = express();
+
+// Custom middleware: Prints the current time for every request
+app.use((req, res, next) => {
+    console.log('Time:', Date.now()); // This line prints the time
+    next(); // Pass control to the next middleware or route handler
+});
+
+// Route handler: Responds with 'ok' when you visit '/'
+app.get('/', (req, res) => {
+    res.send('ok');
+});
+
+// Start the server
+const server = app.listen(3000);
+
+
+What Are Static Files?
+Static files are like the building blocks of a website. They include things like images, CSS stylesheets, and JavaScript files.
+ These files don’t change dynamically; they’re the same for every visitor.
+
+const express = require('express');
+const app = express();
+
+// Serve static files from a directory called 'public'
+app.use(express.static('public'));
+
+// Start the server
+app.listen(3000, () => {
+    console.log('Server is listening on port 3000');
+
+});
+
+
+app.use(express.static('public'));
+This line sets up the magic. It’s like telling Express, “Hey, serve these static files!”
+When someone asks for an image or a CSS file, Express fetches it from the ‘public’ folder.
+No need to manually handle each file—Express does it for us.
+
+
+Explain what dynamic routing is in Express.js.
+Dynamic routing in Express.js include parameters, which allows you to create flexible and dynamic routes in your web application.
+ This parameters are used in your route handlers to customize the behaviour based on the data provided.
+
+In Express, dynamic routing is achieved by using route parameters, denoted by a colon (:) followed by the parameter name.
+
+
+Javascript
+const express = require('express'); 
+const app = express(); 
+  
+// Dynamic route with a parameter 
+app.get('/users/:userId', (req, res) => { 
+  const userId = req.params.userId; 
+  res.send(`User ID: ${userId}`); 
+}); 
+  
+// Start the server 
+const port = 8000; 
+app.listen(port, () => { 
+  console.log(`Server is listening on port ${port}`); 
+}); 
+
+
+ What is the difference between app.route() and app.use() in Express.js?
+app.route() is more specific to route handling and allows you to define a sequence of handlers for a particular route,
+ on the other hand app.use() is a more general-purpose method for applying middleware globally or to specific routes.
+
+const express = require('express');
+const app = express();
+
+// Middleware for all routes
+app.use((req, res, next) => {
+    console.log('Middleware called for every route!');
+    next(); // Pass control to the next middleware or route handler
+});
+
+// Tour guide for '/about'
+app.route('/about')
+    .get((req, res) => {
+        res.send('Welcome to the About page!');
+    })
+    .post((req, res) => {
+        res.send('Thanks for sharing something about us!');
+    });
+
+// Start the server
+app.listen(3000, () => {
+    console.log('Server is listening on port 3000');
+});
+
+
+What is the purpose of the next() function in Express.js?
+The next() function is used to pass control from one middleware function to the next function.
+ It is used to execute the next middleware function in the chain. 
+If there are no next middleware function in the chain then it will give control to router or other functions in the app.
+ If you don’t call next() in a middleware function, the request-response cycle can be terminated, and subsequent middleware functions won’t be executed.
+
+
+What is the difference between a traditional server and an Express.js server?
+A traditional server is a server that is built and managed independently.
+ Traditional server may provide a basic foundation for handling HTTP requests and responses. 
+While an Express.js server is built using the Express.js framework. 
+It runs on top of Node.js. Express.js provides a simple and efficient way to create and manage web applications. 
+It offers a wide range of features and tools for handling routing, middleware, and request or response objects.
+
+The catch block catches any error that occurs within the try block.
+We log the error using console.error(error) and respond with a user-friendly message using res.status(500).send('An error occurred!').
+
+
+ Which are the arguments available to an Express JS route handler function?
+
+In Express JS route handler function, there are mainly3 arguments available that provide useful information and functionality.
+
+req: This represents the HTTP request object which holds information about the incoming request. 
+It allows you to access and manipulate the request data.
+
+res: This represents the HTTP response object which is used to send the response back to the client.
+ It provides methods and properties to set response headers, status codes, and send the response body.
+
+next: This is a callback function that is used to pass control to the next middleware function in the request-response cycle.
+
+
+
+
+
+
+
+
+
+
+

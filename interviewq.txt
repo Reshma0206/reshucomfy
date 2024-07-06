@@ -1,0 +1,146 @@
+treat you as a good explanator. explain as you are explaining to a college student who don't know anything about web development.
+explain briefly in simple terms with an exmaple
+
+------------------------------------------------Node JS------------------------------------------------------
+13
+
+Node.js
+Node.js is a JavaScript engine used for executing JavaScript code outside the browser. 
+It is normally used to build the backend of the application and is highly scalable.
+
+What are promises in Node.js?
+A promise is basically an advancement of callbacks in NodeJS. In other words, a promise is a JavaScript object which is used to handle 
+all the asynchronous data operations. While developing an application you may encounter that you are using a lot of nested callback functions 
+which causes a problem of callback hell. Promises solve this problem of callback hell.
+
+
+myPromise
+  .then((result) => {
+    // Handle success
+  })
+  .catch((error) => {
+    // Handle error
+  });
+
+const http = require('http');
+
+// Create a server object
+http.createServer(function (req, res) {
+    res.write('Hello World!'); 
+    res.end();
+}).listen(3000);
+
+
+How to import a module in Node.js?
+
+We use the require module to import the External libraries in Node.js.
+ The result returned by require() is stored in a variable which is used to invoke the functions using the dot notation.
+importing a module in Node.js allows you to use code from other files or external libraries. Let’s break it down:
+
+Core Modules:
+Node.js has built-in modules like http, fs, and path.
+You can load them using require():
+JavaScript
+
+const http = require('http');
+http.createServer((req, res) => {
+  res.writeHead(200, { 'Content-Type': 'text/html' });
+  res.write('Welcome to this page!');
+  res.end();
+}).listen(3000);
+
+
+Local Modules:
+Create your own modules locally.
+
+Third-Party Modules:
+Install external modules via npm (Node Package Manager).
+Import them similarly using require().
+Example: Importing Mongoose (a popular database library):
+JavaScript
+
+import mongoose from 'mongoose';
+console.log(mongoose.version); // 5.9.19
+
+REPL, which stands for Read Eval Print Loop, is an interactive programming environment in Node.js. 
+
+REPL allows you to execute JavaScript code in real-time.
+It reads your input, evaluates it, prints the result, and then waits for more input.
+
+The event loop in Node.js is a mechanism that allows it to handle multiple asynchronous tasks concurrently within a single thread. 
+It continuously listens for events and executes associated callback functions.
+
+Node.js handles many tasks simultaneously using its single thread.
+When you ask it to read a file or make a network request, Node.js doesn’t wait around.
+It sends the task away and says, “I’ll let you know when it’s done!”
+
+What is middleware?
+Middleware is the function that works between the request and the response cycle. 
+Middleware gets executed after the server receives the request and before the controller sends the response.
+
+useCases 
+Handle authentication, logging, or error handling.
+
+npm
+npm (Node Package Manager) is the default package manager for Node.js. It allows developers to discover, share, and reuse code packages easily. 
+
+module
+In Node.js Application, a Module can be considered as a block of code that provide a simple or complex functionality that can communicate with external application.
+ Modules can be organized in a single file or a collection of multiple files/folders.
+ Modules are useful because of their reusability and ability to reduce the complexity of code into smaller pieces. 
+Some examples of modules are. http, fs, os, path, etc
+
+Node.js handles concurrency by using asynchronous, non-blocking operations. Instead of waiting for one task to complete before starting the next,
+ it can initiate multiple tasks and continue processing while waiting for them to finish, all within a single thread.
+
+----------------------------------------------MongoDB-------------------------------------------
+
+NoSQL stands for "Not Only SQL". NoSQL is a type of database that can handle and sort all type of unstructured, messy and complicated data.
+
+NoSQL database can be classified as 4 basic types:
+
+Key value store NoSQL database
+Document store NoSQL database
+Column store NoSQL database
+Graph base NoSQL databse
+
+MongoDB is better than other SQL databases because it allows a highly flexible and scalable document structure.
+
+For example:
+
+One data document in MongoDB can have five columns and the other one in the same collection can have ten columns.
+MongoDB database are faster than SQL databases due to efficient indexing and storage techniques.
+
+MongoDb is the best NoSQL database because, it is:
+
+Document Oriented
+
+Rich Query language
+
+High Performance
+
+Highly Available
+
+Easily Scalable
+
+ The _id value 666a84dfb2a233e80a6e0d32 is a hexadecimal representation of a unique identifier in MongoDB. Let’s break it down:
+
+Timestamp: The first 8 characters (666a84df) represent the timestamp when the document was created.
+Machine Identifier: The next 6 characters (b2a233) identify the machine where MongoDB is running.
+Process ID: The following 4 characters (e80a) indicate the process generating the _id.
+Random Counter: The last 6 characters (6e0d32) provide a unique value to prevent collisions
+
+
+BSON stands for Binary JSON. It’s a binary file format used to store serialized JSON documents in a binary-encoded format. Developed by MongoDB in 2009, BSON retains the structure of JSON but adds some distinct features:
+
+Binary Encoding: Unlike human-readable JSON, BSON is binary-encoded, making it more efficient for machines to parse.
+Data Types: BSON supports additional data types beyond what JSON offers, including dates and binary data.
+Usage: It’s commonly used in MongoDB databases to represent documents.
+
+What are Indexes in MongoDB?
+In MondoDB, Indexes are used to execute query efficiently. Without indexes, MongoDB must perform a collection scan,
+ i.e. scan every document in a collection, to select those documents that match the query statement.
+
+What is a Namespace in MongoDB?
+Namespace is a concatenation of the database name and the collection name.
+ If an appropriate index exists for a query, MongoDB can use the index to limit the number of documents it must inspect.
